@@ -1,0 +1,43 @@
+# Yeniden yazma motorunu etkinleştir
+RewriteEngine On
+
+# HTTP'den HTTPS'ye yönlendirme
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# 404 sayfasına yönlendirme
+ErrorDocument 404 /404.php
+
+# PHP uzantısını gizle
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteCond %{REQUEST_FILENAME}.php -f
+# RewriteRule ^([^/]+)/?$ $1.php [L]
+
+# Dizin listelemeyi engelle
+Options -Indexes
+
+# PHP hata göstermeyi kapat
+php_flag display_errors off
+php_value error_reporting 0
+
+# Güvenlik başlıkları
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Hassas dosyaları engelle
+<FilesMatch "^\.(?!well-known)|config\.php|\.env">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# PHP açıkları için güvenlik ayarları
+<IfModule mod_php.c>
+    php_flag register_globals off
+    php_flag magic_quotes_gpc off
+    php_flag allow_url_fopen off
+    php_flag display_errors off
+</IfModule>
